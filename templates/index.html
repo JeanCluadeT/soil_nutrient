@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Recommendation and Nutrient Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.16/tailwind.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css">
+    <style>
+    table th, table td {
+        text-align: left;
+        padding: 8px 12px;
+    }
+    thead {
+        background-color: #f3f4f6;
+    }
+    tbody tr:nth-child(even) {
+        background-color: #f9fafb;
+    }
+    tbody tr:hover {
+        background-color: #edf2f7;
+    }
+</style>
+
+</head>
+<body class="bg-gray-100">
+
+    <!-- Navigation Bar -->
+    <nav class="bg-blue-600 shadow-lg">
+        <div class="container mx-auto p-4 flex justify-between items-center">
+            <a href="#" class="text-white font-bold text-2xl">Crop Manager</a>
+            <div class="space-x-4">
+                <a href="#nutrient-suggestions" class="text-white hover:text-gray-200 transition">Nutrient Suggestions</a>
+                <a href="#data-visualizations" class="text-white hover:text-gray-200 transition">Data Visualizations</a>
+                <a href="#data-table" class="text-white hover:text-gray-200 transition">Sensor Data Table</a>
+                <a href="#map-section" class="text-white hover:text-gray-200 transition">Sensor Map</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container mx-auto my-10 p-6 bg-white rounded-lg shadow-lg">
+
+        <!-- Header -->
+        <header class="text-center mb-10">
+            <h1 class="text-4xl font-extrabold text-blue-600 mb-2">Crop Recommendation & Nutrient Management</h1>
+            <p class="text-gray-700">Optimize crop health and yield with tailored nutrient and pricing insights</p>
+        </header>
+
+        <!-- Nutrient Suggestions Section -->
+        <section id="nutrient-suggestions" class="mt-12">
+            <h2 class="text-2xl font-semibold text-blue-700 mb-4">Nutrient Suggestions</h2>
+            <form action="{{ url_for('suggest_nutrients') }}" method="post" class="space-y-4 bg-blue-50 p-6 rounded-lg shadow-sm">
+                <label for="crop" class="block font-medium text-gray-700">Select Crop:</label>
+                <select name="crop" id="crop" class="border border-gray-300 rounded py-2 px-3 w-full" required>
+<!--                     {% for crop in suggestions_for_all_crops %}
+                    <option value="{{ crop }}">{{ crop }}</option>
+                    {% endfor %} -->
+                    {% if suggestions_for_all_crops %}
+                        {% for crop in suggestions_for_all_crops %}
+                            <option value="{{ crop }}">{{ crop }}</option>
+                        {% endfor %}
+                    {% else %}
+                        <option value="Beans">Beans</option>
+                        <option value="Tomatoes">Tomatoes</option>                    
+                        <option value="Potatoes">Potatoes</option>
+                        <option value="Carrots">Carrots</option>
+                    {% endif %}
+
+                </select>
+                <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 rounded-lg transition">Get Suggestions</button>
+            </form>
+
+            {% if suggestions %}
+                <div class="bg-white rounded-lg shadow mt-6 p-4">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Suggestions for {{ selected_crop }}</h3>
+                    <ul class="list-disc list-inside text-gray-700 space-y-1">
+                        {% for nutrient, suggestion in suggestions.items() %}
+                            <li><strong>{{ nutrient }}:</strong> {{ suggestion }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+
+            {% if suggestions_for_all_crops %}
+            <h3>Soil Nutrient Suggestions</h3>
+<ul>
+  {% for crop, suggestions in suggestions_for_all_crops.items() %}
+    <li>
+      <strong>{{ crop }}</strong>
+      <ul>
+        {% for nutrient, suggestion in suggestions.items() %}
+          <li>{{ nutrient }}: {{ suggestion }}</li>
+        {% endfor %}
+      </ul>
+    </li>
+  {% endfor %}
+</ul>
+{% endif %}
+
+        </section>
+
+        <!-- Sensor Data Visualization -->
+        <section id="data-visualizations" class="mt-12">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Sensor Data Visualizations</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <canvas id="temperatureChart"></canvas>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <canvas id="nitrogenChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sensor Data Table -->
+<section id="data-table" class="mt-12">
+    <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Sensor Data Table</h2>
+    <div class="overflow-auto bg-white p-6 rounded-lg shadow-lg">
+        <table class="min-w-full text-gray-700 border-collapse">
+            <thead>
+                <tr>
+                    <th class="py-2 px-4 border-b text-left">Serial Number</th>
+                    <th class="py-2 px-4 border-b text-left">Temperature (°C)</th>
+                    <th class="py-2 px-4 border-b text-left">Moisture (%)</th>
+                    <th class="py-2 px-4 border-b text-left">Nitrogen (mg/kg)</th>
+                    <th class="py-2 px-4 border-b text-left">Calcium (mg)</th>
+                    <th class="py-2 px-4 border-b text-left">Phosphorus (mg/kg)</th>
+                    <th class="py-2 px-4 border-b text-left">Potassium (mg/kg)</th>
+                    <th class="py-2 px-4 border-b text-left">Soil pH</th>
+                    <th class="py-2 px-4 border-b text-left">Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if sensor_data %}
+                    {% for data in sensor_data %}
+                    <tr class="hover:bg-gray-100">
+                        <td class="py-2 px-4 border-b">{{ data.serial_number }}</td>
+                        <td class="py-2 px-4 border-b">{{ data.temperature }}</td>
+                        <td class="py-2 px-4 border-b">{{ data.humidity }}</td>
+                        <td class="py-2 px-4 border-b">{{ data.nitrogen }}</td>
+                        <td class="py-2 px-4 border-b">{{ data.potassium }}</td>
+                        <td class="py-2 px-4 border-b">{{ data.phosphorus }}</td>
+                        <td class="py-2 px-4 border-b">{{ data.potassium }}</td>
+                        <td class="py-2 px-4 border-b">{{ data.soilPH }}</td>
+                        <td class="py-2 px-4 border-b">{{ data.date }}</td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="8" class="py-4 text-center text-gray-500">No sensor data available</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+
+        <!-- Map Section -->
+        <section id="map-section" class="mt-12">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Sensor Data Map</h2>
+            <div id="map" class="h-96 rounded-lg shadow-md"></div>
+        </section>
+    </div>
+
+    <!-- JavaScript Section -->
+    <script>
+        // Temperature Chart
+        new Chart(document.getElementById('temperatureChart'), {
+            type: 'line',
+            data: {
+                labels: {{ chart_data.dates | tojson }},
+                datasets: [{
+                    label: 'Temperature',
+                    data: {{ chart_data.temperature | tojson }},
+                    borderColor: 'rgb(255, 99, 132)',
+                    fill: true,
+                    tension: 0.3
+                }]
+            }
+        });
+
+        // Nitrogen Chart
+        new Chart(document.getElementById('nitrogenChart'), {
+            type: 'line',
+            data: {
+                labels: {{ chart_data.dates | tojson }},
+                datasets: [{
+                    label: 'Nitrogen',
+                    data: {{ chart_data.nitrogen | tojson }},
+                    borderColor: 'rgb(75, 192, 192)',
+                    fill: true,
+                    tension: 0.3
+                }]
+            }
+        });
+
+        // Map Initialization
+        var map = L.map('map').setView([0, 0], 2);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        {% for sensor in map_data %}
+        L.marker([{{ sensor.lat }}, {{ sensor.lng }}]).addTo(map).bindPopup("Serial: {{ sensor.serial_number }}");
+        {% endfor %}
+    </script>
+</body>
+</html>
