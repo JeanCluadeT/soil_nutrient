@@ -742,7 +742,7 @@ conn = sqlite3.connect('database.db')
 cursor = conn.cursor()
 
 # Execute the DELETE query
-cursor.execute('DELETE FROM sensor_data WHERE phosphorus = 0')
+cursor.execute('DELETE FROM sensor_data WHERE nitrogen = 0')
 
 # Commit the changes and close the connection
 conn.commit()
