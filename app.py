@@ -735,6 +735,20 @@ def suggest_nutrients():
         sensor_data=sensor_data
     )
 
+import sqlite3
+
+# Connect to the database
+conn = sqlite3.connect('database.db')
+cursor = conn.cursor()
+
+# Execute the DELETE query
+cursor.execute('DELETE FROM sensor_data WHERE phosphorus = 0')
+
+# Commit the changes and close the connection
+conn.commit()
+conn.close()
+
+print("Rows with Phosphorus = 0 have been deleted.")
 
 if __name__ == '__main__':
     init_db()
