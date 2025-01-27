@@ -38,14 +38,6 @@ fertilizer_effects = {
     # Add more nutrients and their effects here...
 }
 
-# Example of current soil data for a crop
-current_soil_data = {
-    'pH': 6.2,
-    'Nitrogen': 50,
-    'Phosphorus': 35,
-    'Potassium': 180,
-    'Calcium': 70,
-}
 
 # Initialize the database
 def init_db():
@@ -153,6 +145,25 @@ def rank_nutrients(nutrient, current_value, min_value, max_value):
         return current_value - max_value  # The excess above the maximum
 
 def suggest_soil_nutrients(crop_name, current_soil_data, crop_nutrient_requirements, fertilizer_effects):
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM sensor_data ORDER BY date DESC')
+    rows = cursor.fetchall()
+
+    # Fetch the latest sensor data
+    cursor.execute('SELECT * FROM sensor_data ORDER BY date DESC LIMIT 1')
+    latest_row = cursor.fetchone()
+    conn.close()
+
+    if latest_row:
+        # Prepare current soil data for suggestions
+        current_soil_data = {
+            'pH': latest_row[9],  # soilPH
+            'Nitrogen': latest_row[4],
+            'Phosphorus': latest_row[8],
+            'Potassium': latest_row[5]
+        }
+    
     if crop_name not in crop_nutrient_requirements:
         return {crop_name: f"Sorry, we do not have nutrient data for {crop_name}"}
 
