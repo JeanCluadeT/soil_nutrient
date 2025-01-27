@@ -27,16 +27,8 @@ crop_nutrient_requirements = {
     # Additional crops...
 }
 
-# fertilizer_effects = {'Nitrogen': 10, 'Phosphorus': 5, 'Potassium': 20}
+fertilizer_effects = {'Nitrogen': 10, 'Phosphorus': 5, 'Potassium': 20}
 
-# Example data for fertilizer effects (how much nutrient is added per kg/ha of fertilizer)
-fertilizer_effects = {
-    'Nitrogen': 0.7,  # kg of Nitrogen added per kg of fertilizer
-    'Phosphorus': 0.6,  # kg of Phosphorus added per kg of fertilizer
-    'Potassium': 0.5,  # kg of Potassium added per kg of fertilizer
-    'Calcium': 0.4,  # kg of Calcium added per kg of fertilizer
-    # Add more nutrients and their effects here...
-}
 
 
 # Initialize the database
@@ -127,8 +119,6 @@ def store_data():
 
 
 
-
-
 def rank_nutrients(nutrient, current_value, min_value, max_value):
     """Calculate a ranking score for the nutrient based on proximity to the ideal range."""
     if current_value is None:
@@ -145,25 +135,6 @@ def rank_nutrients(nutrient, current_value, min_value, max_value):
         return current_value - max_value  # The excess above the maximum
 
 def suggest_soil_nutrients(crop_name, current_soil_data, crop_nutrient_requirements, fertilizer_effects):
-    conn = sqlite3.connect('database.db')
-    cursor = conn.cursor()
-    cursor.execute('SELECT * FROM sensor_data ORDER BY date DESC')
-    rows = cursor.fetchall()
-
-    # Fetch the latest sensor data
-    cursor.execute('SELECT * FROM sensor_data ORDER BY date DESC LIMIT 1')
-    latest_row = cursor.fetchone()
-    conn.close()
-
-    if latest_row:
-        # Prepare current soil data for suggestions
-        current_soil_data = {
-            'pH': latest_row[9],  # soilPH
-            'Nitrogen': latest_row[4],
-            'Phosphorus': latest_row[8],
-            'Potassium': latest_row[5]
-        }
-    
     if crop_name not in crop_nutrient_requirements:
         return {crop_name: f"Sorry, we do not have nutrient data for {crop_name}"}
 
@@ -200,6 +171,7 @@ def suggest_soil_nutrients(crop_name, current_soil_data, crop_nutrient_requireme
             suggestions[nutrient] = f"Decrease {nutrient} (current: {current_value}), recommended: {min_value}-{max_value}."
 
     return suggestions
+
 
 
 
