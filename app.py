@@ -90,29 +90,88 @@ def store_data():
     return jsonify({"status": "success", "message": "Data stored successfully"}), 200
 
 # Function to suggest soil nutrients based on crop requirements
-def suggest_soil_nutrients(crop_name, current_soil_data):
+# def suggest_soil_nutrients(crop_name, current_soil_data):
+#     if crop_name not in crop_nutrient_requirements:
+#         return {crop_name: f"Sorry, we do not have nutrient data for {crop_name}"}
+
+#     suggestions = {}
+#     crop_requirements = crop_nutrient_requirements[crop_name]
+
+#     for nutrient, (min_value, max_value) in crop_requirements.items():
+#         current_value = current_soil_data.get(nutrient)
+#         if current_value is None:
+#             # suggestions.append(f"Missing {nutrient} data.")
+#             suggestions[nutrient] = f"Increase Calcium by applying {random.uniform(1.50, 3.09):.2f} kg/ha."
+#         elif current_value < min_value:
+#             deficit = min_value - current_value
+#             if nutrient in fertilizer_effects:
+#                 rate = deficit / fertilizer_effects[nutrient]
+#                 suggestions[nutrient] = f"Increase {nutrient} by applying {rate:.2f} kg/ha."
+#             else:
+#                 suggestions[nutrient] = f"Increase {nutrient}, current: {current_value}, recommended: {min_value}-{max_value}."
+#         elif current_value > max_value:
+#             suggestions[nutrient] = f"Decrease {nutrient}, current: {current_value}, recommended: {min_value}-{max_value}."
+
+#     return suggestions
+
+
+
+
+
+
+def rank_nutrients(nutrient, current_value, min_value, max_value):
+    """Calculate a ranking score for the nutrient based on proximity to the ideal range."""
+    if current_value is None:
+        return float('inf')  # Missing data will be ranked last
+
+    # If current value is within the range, return a high rank (close to ideal)
+    if min_value <= current_value <= max_value:
+        return 0  # Perfect match (best suited)
+
+    # Calculate distance from the range
+    if current_value < min_value:
+        return min_value - current_value  # The deficit from the minimum
+    elif current_value > max_value:
+        return current_value - max_value  # The excess above the maximum
+
+def suggest_soil_nutrients(crop_name, current_soil_data, crop_nutrient_requirements, fertilizer_effects):
     if crop_name not in crop_nutrient_requirements:
         return {crop_name: f"Sorry, we do not have nutrient data for {crop_name}"}
 
     suggestions = {}
     crop_requirements = crop_nutrient_requirements[crop_name]
 
+    # Create a list of nutrients with their rank scores
+    ranked_nutrients = []
+
     for nutrient, (min_value, max_value) in crop_requirements.items():
         current_value = current_soil_data.get(nutrient)
+        
+        # Rank the nutrient
+        rank_score = rank_nutrients(nutrient, current_value, min_value, max_value)
+        ranked_nutrients.append((nutrient, rank_score, current_value, min_value, max_value))
+
+    # Sort the nutrients by rank score (lowest rank score is the best)
+    ranked_nutrients.sort(key=lambda x: x[1])
+
+    # Generate the suggestions based on sorted nutrients
+    for nutrient, rank_score, current_value, min_value, max_value in ranked_nutrients:
         if current_value is None:
-            # suggestions.append(f"Missing {nutrient} data.")
-            suggestions[nutrient] = f"Increase Calcium by applying {random.uniform(1.50, 3.09):.2f} kg/ha."
+            suggestions[nutrient] = f"Missing {nutrient} data. Please add this information to get accurate suggestions."
+        elif rank_score == 0:
+            suggestions[nutrient] = f"{nutrient} is within the optimal range (current: {current_value}, recommended: {min_value}-{max_value})."
         elif current_value < min_value:
             deficit = min_value - current_value
             if nutrient in fertilizer_effects:
                 rate = deficit / fertilizer_effects[nutrient]
-                suggestions[nutrient] = f"Increase {nutrient} by applying {rate:.2f} kg/ha."
+                suggestions[nutrient] = f"Increase {nutrient} by applying {rate:.2f} kg/ha to meet the minimum requirement."
             else:
-                suggestions[nutrient] = f"Increase {nutrient}, current: {current_value}, recommended: {min_value}-{max_value}."
+                suggestions[nutrient] = f"Increase {nutrient} (current: {current_value}), recommended: {min_value}-{max_value}."
         elif current_value > max_value:
-            suggestions[nutrient] = f"Decrease {nutrient}, current: {current_value}, recommended: {min_value}-{max_value}."
+            suggestions[nutrient] = f"Decrease {nutrient} (current: {current_value}), recommended: {min_value}-{max_value}."
 
     return suggestions
+
 
 
 
