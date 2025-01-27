@@ -27,7 +27,25 @@ crop_nutrient_requirements = {
     # Additional crops...
 }
 
-fertilizer_effects = {'Nitrogen': 10, 'Phosphorus': 5, 'Potassium': 20}
+# fertilizer_effects = {'Nitrogen': 10, 'Phosphorus': 5, 'Potassium': 20}
+
+# Example data for fertilizer effects (how much nutrient is added per kg/ha of fertilizer)
+fertilizer_effects = {
+    'Nitrogen': 0.7,  # kg of Nitrogen added per kg of fertilizer
+    'Phosphorus': 0.6,  # kg of Phosphorus added per kg of fertilizer
+    'Potassium': 0.5,  # kg of Potassium added per kg of fertilizer
+    'Calcium': 0.4,  # kg of Calcium added per kg of fertilizer
+    # Add more nutrients and their effects here...
+}
+
+# Example of current soil data for a crop
+current_soil_data = {
+    'pH': 6.2,
+    'Nitrogen': 50,
+    'Phosphorus': 35,
+    'Potassium': 180,
+    'Calcium': 70,
+}
 
 # Initialize the database
 def init_db():
