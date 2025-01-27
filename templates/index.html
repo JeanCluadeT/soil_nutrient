@@ -89,11 +89,11 @@
             {% if suggestions_for_all_crops %}
             <div class="bg-white rounded-lg shadow mt-6 p-4">
             <h3 class="text-xl font-semibold text-gray-800 mb-2">Crop Suggestion</h3>
-<ol>
+<ol class="list-decimal">
   {% for crop, suggestions in suggestions_for_all_crops.items() %}
     <li>
       <strong>{{ crop }}</strong>
-      <ol class="list-decimal">
+      <ol>
         {% for nutrient, suggestion in suggestions.items() %}
           <li>{{ nutrient }}: {{ suggestion }}</li>
         {% endfor %}
