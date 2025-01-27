@@ -93,11 +93,11 @@
   {% for crop, suggestions in suggestions_for_all_crops.items() %}
     <li>
       <strong>{{ crop }}</strong>
-      <ul>
+      <ol>
         {% for nutrient, suggestion in suggestions.items() %}
           <li>{{ nutrient }}: {{ suggestion }}</li>
         {% endfor %}
-      </ul>
+      </ol>
     </li>
   {% endfor %}
 </ol>
