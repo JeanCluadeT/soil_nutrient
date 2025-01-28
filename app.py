@@ -252,9 +252,30 @@ def index():
         ]
     # Define suggestions_for_all_crops with sample data
     all_crops = ['Potatoes', 'Carrots', 'Beans', 'Tomatoes', 'Rice']
-    current_soil_data = {
-        'pH': 6.5, 'Nitrogen': 30, 'Phosphorus': 20, 'Potassium': 150  # Sample values
-    }
+    # current_soil_data = {
+    #     'pH': 6.5, 'Nitrogen': 30, 'Phosphorus': 20, 'Potassium': 150  # Sample values
+    # }
+
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM sensor_data ORDER BY date DESC')
+    rows = cursor.fetchall()
+
+    # Fetch the latest sensor data
+    cursor.execute('SELECT * FROM sensor_data ORDER BY date DESC LIMIT 1')
+    latest_row = cursor.fetchone()
+    conn.close()
+
+    if latest_row:
+        # Prepare current soil data for suggestions
+        current_soil_data = {
+            'pH': latest_row[9],  # soilPH
+            'Nitrogen': latest_row[4],
+            'Phosphorus': latest_row[8],
+            'Potassium': latest_row[5]
+        }
+
+    
     
     # Generate sample nutrient suggestions for each crop
     suggestions_for_all_crops = {}
