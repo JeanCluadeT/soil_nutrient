@@ -106,6 +106,12 @@
 
 
 
+{% if suggestions_for_all_crops2 %}
+  <pre>{{ suggestions_for_all_crops2 | safe }}</pre>
+{% else %}
+  <p>No suggestions available.</p>
+{% endif %}
+
 
 
         </section>
