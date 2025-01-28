@@ -128,7 +128,7 @@
   <p><strong>Rank:</strong> {{ details.rank }}</p>
   <p><strong>Total Score:</strong> {{ details.total_score }}</p>
   <ul>
-    {% for nutrient, suggestion in details.details.items() %}
+    {% for nutrient, suggestion in details.Details.items() %}
       <li><strong>{{ nutrient }}:</strong> {{ suggestion }}</li>
     {% endfor %}
   </ul>
