@@ -86,7 +86,7 @@
             {% endif %}
 
 
-            {% if suggestions_for_all_crops %}
+<!--             {% if suggestions_for_all_crops %}
             <div class="bg-white rounded-lg shadow mt-6 p-4">
             <h3 class="text-xl font-semibold text-gray-800 mb-2">Crop Suggestion</h3>
 <ol class="list-decimal">
@@ -102,7 +102,7 @@
   {% endfor %}
 </ol>
                 </div>
-{% endif %}
+{% endif %} -->
 
 
 
@@ -128,7 +128,7 @@
   <li>
       <strong>{{ crop }}</strong>
   <p><strong>Rank:</strong> {{ details.Rank }}</p>
-  <p><strong>Total Score:</strong> {{ details.TotalScore }}</p>
+<!--   <p><strong>Total Score:</strong> {{ details.TotalScore }}</p> -->
   <ul>
     {% for nutrient, suggestion in details.Details.items() %}
       <li><strong>{{ nutrient }}:</strong> {{ suggestion }}</li>
