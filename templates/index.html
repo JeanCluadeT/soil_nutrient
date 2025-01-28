@@ -104,6 +104,26 @@
                 </div>
 {% endif %}
 
+
+{% if suggestions_for_all_crops2 %}
+  <div class="bg-white rounded-lg shadow mt-6 p-4">
+    <h3 class="text-xl font-semibold text-gray-800 mb-2">Crop Suggestion 2</h3>
+    <ol class="list-decimal pl-6 space-y-4">
+      {% for crop, suggestions in suggestions_for_all_crops2 %}
+        <li>
+          <strong class="text-lg">{{ crop }}</strong>
+          <ol class="list-inside list-none pl-4">
+            {% for nutrient, suggestion in suggestions.items() %}
+              <li class="ml-4 text-gray-700">{{ nutrient }}: {{ suggestion }}</li>
+            {% endfor %}
+          </ol>
+        </li>
+      {% endfor %}
+    </ol>
+  </div>
+{% endif %}
+
+
         </section>
 
         <!-- Sensor Data Visualization -->
