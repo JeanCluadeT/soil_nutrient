@@ -194,7 +194,7 @@ def generate_suggestions(predicted_nutrients, current_nutrients):
     return suggestions
 
 
-# Function to calculate the rank of nutrients based on proximity to ideal range
+# Function to calculate the rank of nutrients based on proximity to the ideal range
 def calculate_nutrient_rank(nutrient, current_value, min_value, max_value):
     """Calculate the rank score for a nutrient based on its proximity to the ideal range."""
     if current_value is None:
@@ -210,7 +210,7 @@ def calculate_nutrient_rank(nutrient, current_value, min_value, max_value):
     elif current_value > max_value:
         return current_value - max_value  # The excess above the maximum
 
-# Function to generate nutrient suggestions for a specific crop
+# Function to generate nutrient suggestions for a specific crop with ranking
 def generate_crop_nutrient_suggestions2(crop_name, current_soil_data, crop_nutrient_requirements, fertilizer_effects):
     suggestions = {}
     crop_requirements = crop_nutrient_requirements[crop_name]
@@ -226,7 +226,7 @@ def generate_crop_nutrient_suggestions2(crop_name, current_soil_data, crop_nutri
         rank_score = calculate_nutrient_rank(nutrient, current_value, min_value, max_value)
         nutrient_ranks.append((nutrient, rank_score, current_value, min_value, max_value))
 
-    # Sort nutrients by their rank score (lowest rank score means best suited)
+    # Sort nutrients by their rank score (lowest rank score means highest priority)
     nutrient_ranks.sort(key=lambda x: x[1])
 
     # Generate suggestions for each nutrient based on its rank
@@ -245,9 +245,16 @@ def generate_crop_nutrient_suggestions2(crop_name, current_soil_data, crop_nutri
         elif current_value > max_value:
             suggestions[nutrient] = f"Decrease {nutrient} (current: {current_value}), recommended: {min_value}-{max_value}."
 
-    return suggestions
+    # Organize suggestions by rank for better clarity
+    ranked_suggestions = {
+        f"Rank {idx + 1} - {nutrient}": suggestion
+        for idx, (nutrient, rank_score, _, _, _) in enumerate(nutrient_ranks)
+        for suggestion in [suggestions[nutrient]]
+    }
 
-# Function to fetch the latest sensor data and generate nutrient suggestions for all crops
+    return ranked_suggestions
+
+# Function to fetch the latest sensor data and generate nutrient suggestions with ranking for all crops
 def fetch_and_generate_crop_suggestions():
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
@@ -272,11 +279,14 @@ def fetch_and_generate_crop_suggestions():
         suggestions_for_all_crops = {}
 
         for crop in all_crops:
-            suggestions_for_all_crops[crop] = generate_crop_nutrient_suggestions2(crop, current_soil_data, crop_nutrient_requirements, fertilizer_effects)
+            suggestions_for_all_crops[crop] = generate_crop_nutrient_suggestions2(
+                crop, current_soil_data, crop_nutrient_requirements, fertilizer_effects
+            )
 
         return suggestions_for_all_crops
     else:
         return "No sensor data available."
+
 
 
 @app.route('/')
