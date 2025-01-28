@@ -211,7 +211,7 @@ def calculate_nutrient_rank(nutrient, current_value, min_value, max_value):
         return current_value - max_value  # The excess above the maximum
 
 # Function to generate nutrient suggestions for a specific crop
-def generate_crop_nutrient_suggestions(crop_name, current_soil_data, crop_nutrient_requirements, fertilizer_effects):
+def generate_crop_nutrient_suggestions2(crop_name, current_soil_data, crop_nutrient_requirements, fertilizer_effects):
     suggestions = {}
     crop_requirements = crop_nutrient_requirements[crop_name]
 
@@ -272,7 +272,7 @@ def fetch_and_generate_crop_suggestions():
         suggestions_for_all_crops = {}
 
         for crop in all_crops:
-            suggestions_for_all_crops[crop] = generate_crop_nutrient_suggestions(crop, current_soil_data, crop_nutrient_requirements, fertilizer_effects)
+            suggestions_for_all_crops[crop] = generate_crop_nutrient_suggestions2(crop, current_soil_data, crop_nutrient_requirements, fertilizer_effects)
 
         return suggestions_for_all_crops
     else:
