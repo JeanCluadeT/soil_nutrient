@@ -271,7 +271,7 @@ def fetch_and_generate_crop_suggestions():
         for rank, (crop, score, details) in enumerate(crop_rankings, start=1):
             ranked_crops[crop] = {
                 'Rank': rank,
-                'Total Score': score,
+                'TotalScore': score,
                 'Details': details
             }
 
