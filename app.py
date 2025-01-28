@@ -194,111 +194,90 @@ def generate_suggestions(predicted_nutrients, current_nutrients):
     return suggestions
 
 
-import logging
-
-# Setup logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-
-# Function to fetch the latest sensor data
-def fetch_latest_sensor_data():
-    """Fetch the latest soil data from the database."""
-    try:
-        with sqlite3.connect('database.db') as conn:
-            cursor = conn.cursor()
-            cursor.execute('SELECT soilPH, Nitrogen, Potassium, Calcium, Phosphorus FROM sensor_data ORDER BY date DESC LIMIT 1')
-            latest_row = cursor.fetchone()
-            return latest_row
-    except sqlite3.Error as e:
-        logging.error(f"Database error: {e}")
-        return None
-
-# Function to prepare soil data
-def prepare_soil_data(latest_row):
-    """Parse and format soil data into a dictionary."""
-    return {
-        'pH': latest_row[0],
-        'Nitrogen': latest_row[1],
-        'Potassium': latest_row[2],
-        'Calcium': latest_row[3],
-        'Phosphorus': latest_row[4]
-    }
-
-# Function to generate suggestions for all crops
-def fetch_and_generate_crop_suggestions():
-    """Fetch sensor data and generate crop-specific nutrient suggestions."""
-    logging.info("Starting nutrient suggestion generation...")
-    latest_row = fetch_latest_sensor_data()
-
-    if not latest_row:
-        logging.warning("No sensor data available.")
-        return "No sensor data available."
-
-    # Prepare current soil data
-    current_soil_data = prepare_soil_data(latest_row)
-
-    # List of crops
-    all_crops = ['Potatoes', 'Carrots', 'Beans', 'Tomatoes', 'Rice']
-    suggestions_for_all_crops = {}
-
-    # Generate suggestions for each crop
-    for crop in all_crops:
-        suggestions_for_all_crops[crop] = generate_crop_nutrient_suggestions(
-            crop,
-            current_soil_data,
-            crop_nutrient_requirements,
-            fertilizer_effects
-        )
-
-    logging.info("Nutrient suggestions successfully generated for all crops.")
-    return suggestions_for_all_crops
-
-# Function to calculate nutrient rank
+# Function to calculate the rank of nutrients based on proximity to ideal range
 def calculate_nutrient_rank(nutrient, current_value, min_value, max_value):
     """Calculate the rank score for a nutrient based on its proximity to the ideal range."""
     if current_value is None:
         return float('inf')  # Missing data is ranked last
 
+    # Rank nutrient based on how close it is to the recommended range
     if min_value <= current_value <= max_value:
-        return 0  # Perfect match
+        return 0  # Perfect match (best suited)
 
-    # Distance from ideal range
+    # Calculate distance from the range (deficit or excess)
     if current_value < min_value:
-        return min_value - current_value
+        return min_value - current_value  # The deficit from the minimum
     elif current_value > max_value:
-        return current_value - max_value
+        return current_value - max_value  # The excess above the maximum
 
-# Function to generate crop-specific suggestions
+# Function to generate nutrient suggestions for a specific crop
 def generate_crop_nutrient_suggestions(crop_name, current_soil_data, crop_nutrient_requirements, fertilizer_effects):
-    """Generate nutrient suggestions for a specific crop."""
     suggestions = {}
     crop_requirements = crop_nutrient_requirements[crop_name]
 
-    # Rank nutrients
-    nutrient_ranks = [
-        (nutrient, calculate_nutrient_rank(nutrient, current_soil_data.get(nutrient), min_value, max_value), current_soil_data.get(nutrient), min_value, max_value)
-        for nutrient, (min_value, max_value) in crop_requirements.items()
-    ]
+    # List to hold nutrient details and their rank scores
+    nutrient_ranks = []
 
-    # Sort by rank
+    # Rank each nutrient and store details
+    for nutrient, (min_value, max_value) in crop_requirements.items():
+        current_value = current_soil_data.get(nutrient)
+        
+        # Get the rank for the nutrient
+        rank_score = calculate_nutrient_rank(nutrient, current_value, min_value, max_value)
+        nutrient_ranks.append((nutrient, rank_score, current_value, min_value, max_value))
+
+    # Sort nutrients by their rank score (lowest rank score means best suited)
     nutrient_ranks.sort(key=lambda x: x[1])
 
-    # Generate suggestions
+    # Generate suggestions for each nutrient based on its rank
     for nutrient, rank_score, current_value, min_value, max_value in nutrient_ranks:
         if current_value is None:
-            suggestions[nutrient] = f"Missing {nutrient} data. Please provide accurate values."
+            suggestions[nutrient] = f"Missing {nutrient} data. Please add this information to get accurate suggestions."
         elif rank_score == 0:
-            suggestions[nutrient] = f"{nutrient} is optimal (current: {current_value}, recommended: {min_value}-{max_value})."
+            suggestions[nutrient] = f"{nutrient} is within the optimal range (current: {current_value}, recommended: {min_value}-{max_value})."
         elif current_value < min_value:
             deficit = min_value - current_value
             if nutrient in fertilizer_effects:
                 rate = deficit / fertilizer_effects[nutrient]
-                suggestions[nutrient] = f"Increase {nutrient} by applying {rate:.2f} kg/ha to meet the requirement."
+                suggestions[nutrient] = f"Increase {nutrient} by applying {rate:.2f} kg/ha to meet the minimum requirement."
             else:
-                suggestions[nutrient] = f"Increase {nutrient} to reach the range {min_value}-{max_value}."
+                suggestions[nutrient] = f"Increase {nutrient} (current: {current_value}), recommended: {min_value}-{max_value}."
         elif current_value > max_value:
-            suggestions[nutrient] = f"Reduce {nutrient} to fit within the range {min_value}-{max_value}."
+            suggestions[nutrient] = f"Decrease {nutrient} (current: {current_value}), recommended: {min_value}-{max_value}."
 
     return suggestions
+
+# Function to fetch the latest sensor data and generate nutrient suggestions for all crops
+def fetch_and_generate_crop_suggestions():
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+    
+    # Fetch the latest sensor data
+    cursor.execute('SELECT * FROM sensor_data ORDER BY date DESC LIMIT 1')
+    latest_row = cursor.fetchone()
+    conn.close()
+
+    if latest_row:
+        # Prepare current soil data for suggestions
+        current_soil_data = {
+            'pH': latest_row[9],  # soilPH
+            'Nitrogen': latest_row[4],
+            'Phosphorus': latest_row[8],
+            'Potassium': latest_row[5],
+            'Calcium': latest_row[6]  # Assuming Calcium data is stored in column 6
+        }
+
+        # Generate suggestions for each crop
+        all_crops = ['Potatoes', 'Carrots', 'Beans', 'Tomatoes', 'Rice']
+        suggestions_for_all_crops = {}
+
+        for crop in all_crops:
+            suggestions_for_all_crops[crop] = generate_crop_nutrient_suggestions(crop, current_soil_data, crop_nutrient_requirements, fertilizer_effects)
+
+        return suggestions_for_all_crops
+    else:
+        return "No sensor data available."
+
 
 @app.route('/')
 def index():
@@ -391,8 +370,10 @@ def index():
         suggestions_for_all_crops[crop] = suggestions
     
 
-    return render_template('index.html', chart_data=chart_data, map_data=map_data, suggestions_for_all_crops=suggestions_for_all_crops,sensor_data=sensor_data, suggestions_for_all_crops2 = generate_crop_nutrient_suggestions())
- 
+    # return render_template('index.html', chart_data=chart_data, map_data=map_data, suggestions_for_all_crops=suggestions_for_all_crops,sensor_data=sensor_data, suggestions_for_all_crops2 = fetch_and_generate_crop_suggestions())
+    return render_template('index.html', chart_data=chart_data, map_data=map_data, suggestions_for_all_crops=suggestions_for_all_crops, sensor_data=sensor_data, suggestions_for_all_crops2=fetch_and_generate_crop_suggestions())
+
+
 
 # @app.route('/')
 # def index():
