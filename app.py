@@ -851,7 +851,8 @@ def suggest_nutrients():
         price_predictions=price_predictions,
         chart_data=chart_data,
         map_data=map_data,
-        sensor_data=sensor_data
+        sensor_data=sensor_data,
+        suggestions_for_all_crops2=fetch_and_generate_crop_suggestions()
     )
 
 import sqlite3
