@@ -370,10 +370,8 @@ def index():
         suggestions_for_all_crops[crop] = suggestions
     
 
-    # return render_template('index.html', chart_data=chart_data, map_data=map_data, suggestions_for_all_crops=suggestions_for_all_crops,sensor_data=sensor_data, suggestions_for_all_crops2 = fetch_and_generate_crop_suggestions())
-    return render_template('index.html', chart_data=chart_data, map_data=map_data, suggestions_for_all_crops=suggestions_for_all_crops, sensor_data=sensor_data, suggestions_for_all_crops2=fetch_and_generate_crop_suggestions())
-
-
+    return render_template('index.html', chart_data=chart_data, map_data=map_data, suggestions_for_all_crops=suggestions_for_all_crops,sensor_data=sensor_data, suggestions_for_all_crops2 = fetch_and_generate_crop_suggestions())
+ 
 
 # @app.route('/')
 # def index():
