@@ -368,8 +368,10 @@ def index():
     for crop in all_crops:
         suggestions = suggest_soil_nutrients(crop, current_soil_data)
         suggestions_for_all_crops[crop] = suggestions
+    
+    print(suggestions_for_all_crops2())
 
-    return render_template('index.html', chart_data=chart_data, map_data=map_data, suggestions_for_all_crops=suggestions_for_all_crops,sensor_data=sensor_data, suggestions_for_all_crops2 = fetch_and_generate_crop_suggestions())
+    # return render_template('index.html', chart_data=chart_data, map_data=map_data, suggestions_for_all_crops=suggestions_for_all_crops,sensor_data=sensor_data, suggestions_for_all_crops2 = fetch_and_generate_crop_suggestions())
 
 # @app.route('/')
 # def index():
