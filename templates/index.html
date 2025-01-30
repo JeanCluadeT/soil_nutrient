@@ -151,12 +151,9 @@
   // Extract crop names and computed values from Jinja
   const cropLabels = [{% for crop, details in suggestions_for_all_crops2.items() %}"{{ crop }}",{% endfor %}];
   // const cropValues = [{% for crop, details in suggestions_for_all_crops2.items() %}{{ (details.Rank * 100) - 10 }},{% endfor %}];
-                
-    // Get max rank (assuming crops are ranked in order)
-  const maxRank = {{ suggestions_for_all_crops2|length }};
 
   // Compute values to ensure Rank 1 has the highest value
-  const cropValues = [{% for crop, details in suggestions_for_all_crops2.items() %}{{ ((maxRank - details.Rank + 1) * 100) - 10 }},{% endfor %}];
+  const cropValues = [{% for crop, details in suggestions_for_all_crops2.items() %}{{ ((5 - details.Rank + 1) * 100) - 10 }},{% endfor %}];
 
   // Create Bar Chart
   const ctx = document.getElementById('cropChart').getContext('2d');
