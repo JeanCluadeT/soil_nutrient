@@ -862,7 +862,9 @@ conn = sqlite3.connect('database.db')
 cursor = conn.cursor()
 
 # Execute the DELETE query
-cursor.execute('DELETE FROM sensor_data WHERE nitrogen = 0')
+# cursor.execute('DELETE FROM sensor_data WHERE nitrogen = 0')
+cursor.execute("DELETE FROM sensor_data WHERE current_date < ?", ("2025-01-20 17:20:05",))
+
 
 # Commit the changes and close the connection
 conn.commit()
