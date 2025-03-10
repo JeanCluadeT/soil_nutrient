@@ -96,10 +96,10 @@ def store_data():
             json.dump(sensor_data, file, indent=4)
 
         with open("sensor_data.json", "r") as f:
-            data = json.load(f)
-            print(data)
+            datasaved = json.load(f)
+            print(datasaved)
 
-        return jsonify({"success": True, "message": data}), 200
+        return jsonify({"success": True, "message": datasaved}), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
