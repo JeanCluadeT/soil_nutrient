@@ -1,1 +1,48 @@
 
+{
+    "message": [
+        {
+            "eclec": 2.1,
+            "humidity": 65.2,
+            "latitude": -1.9501,
+            "longitude": 30.0588,
+            "moisture": 30.2,
+            "nitrogen": 15.0,
+            "phosphorus": 5.7,
+            "potassium": 10.5,
+            "serial_number": "SENSOR123",
+            "soilPH": 6.5,
+            "temperature": 25.4,
+            "timestamp": "2025-03-10 22:49:31"
+        },
+        {
+            "eclec": 2.1,
+            "humidity": 65.2,
+            "latitude": -1.9501,
+            "longitude": 30.0588,
+            "moisture": 30.2,
+            "nitrogen": 15.0,
+            "phosphorus": 5.7,
+            "potassium": 10.5,
+            "serial_number": "SENSOR123",
+            "soilPH": 6.5,
+            "temperature": 25.4,
+            "timestamp": "2025-03-10 22:49:33"
+        },
+        {
+            "eclec": 2.1,
+            "humidity": 65.2,
+            "latitude": -1.9501,
+            "longitude": 30.0588,
+            "moisture": 30.2,
+            "nitrogen": 15.0,
+            "phosphorus": 5.7,
+            "potassium": 10.5,
+            "serial_number": "SENSOR123",
+            "soilPH": 6.5,
+            "temperature": 25.4,
+            "timestamp": "2025-03-10 22:49:35"
+        }
+    ],
+    "success": true
+}
