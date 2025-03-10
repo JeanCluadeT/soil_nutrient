@@ -62,35 +62,47 @@ def init_db():
 def store_data():
     data = request.get_json()  # Expecting JSON data from ESP
 
-    # Extract data from the request
-    sensor_entry = {
-        "serial_number": data.get('serial_number', 'unknown'),
-        "temperature": float(data.get('temperature', 0.0)),
-        "humidity": float(data.get('humidity', 0.0)),
-        "nitrogen": float(data.get('nitrogen', 0.0)),
-        "potassium": float(data.get('potassium', 0.0)),
-        "moisture": float(data.get('moisture', 0.0)),
-        "eclec": float(data.get('eclec', 0.0)),
-        "phosphorus": float(data.get('phosphorus', 0.0)),
-        "soilPH": float(data.get('soilPH', 0.0)),
-        "latitude": float(data.get('latitude', 0.0)),
-        "longitude": float(data.get('longitude', 0.0)),
-        "timestamp": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    }
-
-    # Read existing data
     try:
-        with open(DATA_FILE, "r") as file:
-            sensor_data = json.load(file)
-    except (FileNotFoundError, json.JSONDecodeError):
-        sensor_data = []
+        if not data:
+            return jsonify({"error": "Invalid JSON data"}), 400
+        
+        # Extract data from the request
+        sensor_entry = {
+            "serial_number": data.get('serial_number', 'unknown'),
+            "temperature": float(data.get('temperature', 0.0)),
+            "humidity": float(data.get('humidity', 0.0)),
+            "nitrogen": float(data.get('nitrogen', 0.0)),
+            "potassium": float(data.get('potassium', 0.0)),
+            "moisture": float(data.get('moisture', 0.0)),
+            "eclec": float(data.get('eclec', 0.0)),
+            "phosphorus": float(data.get('phosphorus', 0.0)),
+            "soilPH": float(data.get('soilPH', 0.0)),
+            "latitude": float(data.get('latitude', 0.0)),
+            "longitude": float(data.get('longitude', 0.0)),
+            "timestamp": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        }
 
-    # Append new data
-    sensor_data.append(sensor_entry)
+        # Read existing data
+        try:
+            with open(DATA_FILE, "r") as file:
+                sensor_data = json.load(file)
+        except (FileNotFoundError, json.JSONDecodeError):
+            sensor_data = []
 
-    # Save updated data back to file
-    with open(DATA_FILE, "w") as file:
-        json.dump(sensor_data, file, indent=4)
+        # Append new data
+        sensor_data.append(sensor_entry)
+
+        # Save updated data back to file
+        with open(DATA_FILE, "w") as file:
+            json.dump(sensor_data, file, indent=4)
+
+        return jsonify({"message": "Data stored successfully to file"}), 200
+
+    except ValueError as e:
+        return jsonify({"error": f"Invalid data type: {str(e)}"}), 400
+    except Exception as e:
+        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+        
     
     # Extract data from the request
     serial_number = data.get('serial_number', 'unknown')
