@@ -95,7 +95,11 @@ def store_data():
         with open("sensor_data.json", "w") as file:
             json.dump(sensor_data, file, indent=4)
 
-        return jsonify({"success": True, "message": "Data stored successfully"}), 200
+        with open("sensor_data.json", "r") as f:
+            data = json.load(f)
+            print(data)
+
+        return jsonify({"success": True, "message": data}), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
