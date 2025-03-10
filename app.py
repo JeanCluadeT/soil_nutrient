@@ -64,9 +64,8 @@ def store_data():
 
     try:
         if not data:
-            return jsonify({"error": "Invalid JSON data"}), 400
+            return jsonify({"error": "Invalid JSON"}), 400
         
-        # Extract data from the request
         sensor_entry = {
             "serial_number": data.get('serial_number', 'unknown'),
             "temperature": float(data.get('temperature', 0.0)),
@@ -84,7 +83,7 @@ def store_data():
 
         # Read existing data
         try:
-            with open(DATA_FILE, "r") as file:
+            with open("sensor_data.json", "r") as file:
                 sensor_data = json.load(file)
         except (FileNotFoundError, json.JSONDecodeError):
             sensor_data = []
@@ -93,15 +92,13 @@ def store_data():
         sensor_data.append(sensor_entry)
 
         # Save updated data back to file
-        with open(DATA_FILE, "w") as file:
+        with open("sensor_data.json", "w") as file:
             json.dump(sensor_data, file, indent=4)
 
-        return jsonify({"message": "Data stored successfully to file"}), 200
+        return jsonify({"success": True, "message": "Data stored successfully"}), 200
 
-    except ValueError as e:
-        return jsonify({"error": f"Invalid data type: {str(e)}"}), 400
     except Exception as e:
-        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+        return jsonify({"error": str(e)}), 500
         
     
     # Extract data from the request
