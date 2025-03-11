@@ -63,8 +63,8 @@ def store_data():
     data = request.get_json()  # Expecting JSON data from ESP
 
     try:
-        if not data:
-            return jsonify({"error": "Invalid JSON"}), 400
+        if not data or not isinstance(data, dict):
+        return jsonify({"error": "Invalid JSON format or data"}), 400
         
         sensor_entry = {
             "serial_number": data.get('serial_number', 'unknown'),
