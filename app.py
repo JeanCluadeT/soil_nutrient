@@ -60,12 +60,19 @@ def init_db():
 # Route to store new sensor data in the database
 @app.route('/store', methods=['POST'])
 def store_data():
-    data = request.get_json()  # Expecting JSON data from ESP
+    print(f"Request Headers: {request.headers}")  # Logs headers to ensure proper content-type
+    print(f"Request Body: {request.data}")  # Logs the raw body of the request
 
     try:
-        if not data or not isinstance(data, dict):
-            return jsonify({"error": "Invalid JSON format or data"}), 400
-        
+        data = request.get_json()  # Expecting JSON data from ESP
+        print(f"Parsed Data: {data}")  # Logs the parsed data
+    except Exception as e:
+        return jsonify({"error": f"Error parsing JSON: {str(e)}"}), 400
+
+    if not data or not isinstance(data, dict):
+        return jsonify({"error": "Invalid JSON format or data"}), 400
+
+    try:
         sensor_entry = {
             "serial_number": data.get('serial_number', 'unknown'),
             "temperature": float(data.get('temperature', 0.0)),
@@ -95,14 +102,17 @@ def store_data():
         with open("sensor_data.json", "w") as file:
             json.dump(sensor_data, file, indent=4)
 
+        # Read and print the saved data
         with open("sensor_data.json", "r") as f:
             datasaved = json.load(f)
             print(datasaved)
 
+        # Return a response with the updated data
         return jsonify({"success": True, "message": datasaved}), 200
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+
         
     
     # Extract data from the request
