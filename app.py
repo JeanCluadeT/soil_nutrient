@@ -92,11 +92,14 @@ def store_data():
         try:
             with open("sensor_data.json", "r") as file:
                 sensor_data = json.load(file)
+                # Ensure 'message' is a list
+                if not isinstance(sensor_data.get("message"), list):
+                    sensor_data["message"] = []  # Reset to an empty list if not a list
         except (FileNotFoundError, json.JSONDecodeError):
-            sensor_data = []
+            sensor_data = {"message": []}  # Default structure with a "message" list
 
-        # Append new data
-        sensor_data.append(sensor_entry)
+        # Append new data to the "message" list
+        sensor_data["message"].append(sensor_entry)
 
         # Save updated data back to file
         with open("sensor_data.json", "w") as file:
@@ -112,6 +115,7 @@ def store_data():
 
     except Exception as e:
         return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+
 
         
     
