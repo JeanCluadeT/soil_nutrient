@@ -60,61 +60,62 @@ def init_db():
 # Route to store new sensor data in the database
 @app.route('/store', methods=['POST'])
 def store_data():
-    print(f"Request Headers: {request.headers}")  # Logs headers to ensure proper content-type
-    print(f"Request Body: {request.data}")  # Logs the raw body of the request
+    data = request.get_json()  # Expecting JSON data from ESP
+    # print(f"Request Headers: {request.headers}")  # Logs headers to ensure proper content-type
+    # print(f"Request Body: {request.data}")  # Logs the raw body of the request
 
-    try:
-        data = request.get_json()  # Expecting JSON data from ESP
-        print(f"Parsed Data: {data}")  # Logs the parsed data
-    except Exception as e:
-        return jsonify({"error": f"Error parsing JSON: {str(e)}"}), 400
+    # try:
+    #     
+    #     print(f"Parsed Data: {data}")  # Logs the parsed data
+    # except Exception as e:
+    #     return jsonify({"error": f"Error parsing JSON: {str(e)}"}), 400
 
-    if not data or not isinstance(data, dict):
-        return jsonify({"error": "Invalid JSON format or data"}), 400
+    # if not data or not isinstance(data, dict):
+    #     return jsonify({"error": "Invalid JSON format or data"}), 400
 
-    try:
-        sensor_entry = {
-            "serial_number": data.get('serial_number', 'unknown'),
-            "temperature": float(data.get('temperature', 0.0)),
-            "humidity": float(data.get('humidity', 0.0)),
-            "nitrogen": float(data.get('nitrogen', 0.0)),
-            "potassium": float(data.get('potassium', 0.0)),
-            "moisture": float(data.get('moisture', 0.0)),
-            "eclec": float(data.get('eclec', 0.0)),
-            "phosphorus": float(data.get('phosphorus', 0.0)),
-            "soilPH": float(data.get('soilPH', 0.0)),
-            "latitude": float(data.get('latitude', 0.0)),
-            "longitude": float(data.get('longitude', 0.0)),
-            "timestamp": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        }
+    # try:
+    #     sensor_entry = {
+    #         "serial_number": data.get('serial_number', 'unknown'),
+    #         "temperature": float(data.get('temperature', 0.0)),
+    #         "humidity": float(data.get('humidity', 0.0)),
+    #         "nitrogen": float(data.get('nitrogen', 0.0)),
+    #         "potassium": float(data.get('potassium', 0.0)),
+    #         "moisture": float(data.get('moisture', 0.0)),
+    #         "eclec": float(data.get('eclec', 0.0)),
+    #         "phosphorus": float(data.get('phosphorus', 0.0)),
+    #         "soilPH": float(data.get('soilPH', 0.0)),
+    #         "latitude": float(data.get('latitude', 0.0)),
+    #         "longitude": float(data.get('longitude', 0.0)),
+    #         "timestamp": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    #     }
 
-        # Read existing data
-        try:
-            with open("sensor_data.json", "r") as file:
-                sensor_data = json.load(file)
-                # Ensure 'message' is a list
-                if not isinstance(sensor_data.get("message"), list):
-                    sensor_data["message"] = []  # Reset to an empty list if not a list
-        except (FileNotFoundError, json.JSONDecodeError):
-            sensor_data = {"message": []}  # Default structure with a "message" list
+    #     # Read existing data
+    #     try:
+    #         with open("sensor_data.json", "r") as file:
+    #             sensor_data = json.load(file)
+    #             # Ensure 'message' is a list
+    #             if not isinstance(sensor_data.get("message"), list):
+    #                 sensor_data["message"] = []  # Reset to an empty list if not a list
+    #     except (FileNotFoundError, json.JSONDecodeError):
+    #         sensor_data = {"message": []}  # Default structure with a "message" list
 
-        # Append new data to the "message" list
-        sensor_data["message"].append(sensor_entry)
+    #     # Append new data to the "message" list
+    #     sensor_data["message"].append(sensor_entry)
 
-        # Save updated data back to file
-        with open("sensor_data.json", "w") as file:
-            json.dump(sensor_data, file, indent=4)
+    #     # Save updated data back to file
+    #     with open("sensor_data.json", "w") as file:
+    #         json.dump(sensor_data, file, indent=4)
 
-        # Read and print the saved data
-        with open("sensor_data.json", "r") as f:
-            datasaved = json.load(f)
-            print(datasaved)
+    #     # Read and print the saved data
+    #     with open("sensor_data.json", "r") as f:
+    #         datasaved = json.load(f)
+    #         print(datasaved)
 
-        # Return a response with the updated data
-        return jsonify({"success": True, "message": datasaved}), 200
+    #     # Return a response with the updated data
+    #     return jsonify({"success": True, "message": datasaved}), 200
 
-    except Exception as e:
-        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+    # except Exception as e:
+    #     return jsonify({"error": f"An error occurred: {str(e)}"}), 500
 
 
         
