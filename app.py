@@ -382,50 +382,50 @@ def index():
     # conn.close()
 
     
-    # sensor_data = [
-    #         {
-    #             'serial_number': row[1],
-    #             'temperature': row[2],
-    #             'humidity': row[3],
-    #             'nitrogen': row[4],
-    #             'potassium': row[5],
-    #             'moisture': row[6],
-    #             'eclec': row[7],
-    #             'phosphorus': row[8],
-    #             'soilPH': row[9],
-    #             'latitude': row[10],
-    #             'longitude': row[11],
-    #             'date': row[12]
-    #         } for row in rows
-    #     ]
-
-
-
-    # Fetch all sensor data for charts and maps from JSON file
-    try:
-        with open("sensor_data.json", "r") as file:
-            data = json.load(file)  # Load data from JSON file
-        sensor_data_list = data.get("message", []) 
-    except (FileNotFoundError, json.JSONDecodeError):
-        sensor_data_list = []  # If file not found or empty, return an empty list
-    
-    # Reformat the data to match the expected structure
     sensor_data = [
-        {
-            'serial_number': row.get('serial_number', 'unknown'),
-            'temperature': row.get('temperature', 0.0),
-            'humidity': row.get('humidity', 0.0),
-            'nitrogen': row.get('nitrogen', 0.0),
-            'potassium': row.get('potassium', 0.0),
-            'moisture': row.get('moisture', 0.0),
-            'eclec': row.get('eclec', 0.0),
-            'phosphorus': row.get('phosphorus', 0.0),
-            'soilPH': row.get('soilPH', 0.0),
-            'latitude': row.get('latitude', 0.0),
-            'longitude': row.get('longitude', 0.0),
-            'date': row.get('timestamp', 'unknown')  # Using 'timestamp' as 'date'
-        } for row in sensor_data_list
-    ]
+            {
+                'serial_number': row[1],
+                'temperature': row[2],
+                'humidity': row[3],
+                'nitrogen': row[4],
+                'potassium': row[5],
+                'moisture': row[6],
+                'eclec': row[7],
+                'phosphorus': row[8],
+                'soilPH': row[9],
+                'latitude': row[10],
+                'longitude': row[11],
+                'date': row[12]
+            } for row in rows
+        ]
+
+
+
+    # # Fetch all sensor data for charts and maps from JSON file
+    # try:
+    #     with open("sensor_data.json", "r") as file:
+    #         data = json.load(file)  # Load data from JSON file
+    #     sensor_data_list = data.get("message", []) 
+    # except (FileNotFoundError, json.JSONDecodeError):
+    #     sensor_data_list = []  # If file not found or empty, return an empty list
+    
+    # # Reformat the data to match the expected structure
+    # sensor_data = [
+    #     {
+    #         'serial_number': row.get('serial_number', 'unknown'),
+    #         'temperature': row.get('temperature', 0.0),
+    #         'humidity': row.get('humidity', 0.0),
+    #         'nitrogen': row.get('nitrogen', 0.0),
+    #         'potassium': row.get('potassium', 0.0),
+    #         'moisture': row.get('moisture', 0.0),
+    #         'eclec': row.get('eclec', 0.0),
+    #         'phosphorus': row.get('phosphorus', 0.0),
+    #         'soilPH': row.get('soilPH', 0.0),
+    #         'latitude': row.get('latitude', 0.0),
+    #         'longitude': row.get('longitude', 0.0),
+    #         'date': row.get('timestamp', 'unknown')  # Using 'timestamp' as 'date'
+    #     } for row in sensor_data_list
+    # ]
 
 
     
@@ -890,48 +890,48 @@ def suggest_nutrients():
     cursor.execute('SELECT * FROM sensor_data ORDER BY date DESC')
     rows = cursor.fetchall()
     conn.close()
-    # sensor_data = [
-    #         {
-    #             'serial_number': row[1],
-    #             'temperature': row[2],
-    #             'humidity': row[3],
-    #             'nitrogen': row[4],
-    #             'potassium': row[5],
-    #             'moisture': row[6],
-    #             'eclec': row[7],
-    #             'phosphorus': row[8],
-    #             'soilPH': row[9],
-    #             'latitude': row[10],
-    #             'longitude': row[11],
-    #             'date': row[12]
-    #         } for row in rows
-    #     ]
-
-    # Fetch all sensor data for charts and maps from JSON file
-    try:
-        with open("sensor_data.json", "r") as file:
-            data = json.load(file)  # Load data from JSON file
-        sensor_data_list = data.get("message", []) 
-    except (FileNotFoundError, json.JSONDecodeError):
-        sensor_data_list = []  # If file not found or empty, return an empty list
-    
-    # Reformat the data to match the expected structure
     sensor_data = [
-        {
-            'serial_number': row.get('serial_number', 'unknown'),
-            'temperature': row.get('temperature', 0.0),
-            'humidity': row.get('humidity', 0.0),
-            'nitrogen': row.get('nitrogen', 0.0),
-            'potassium': row.get('potassium', 0.0),
-            'moisture': row.get('moisture', 0.0),
-            'eclec': row.get('eclec', 0.0),
-            'phosphorus': row.get('phosphorus', 0.0),
-            'soilPH': row.get('soilPH', 0.0),
-            'latitude': row.get('latitude', 0.0),
-            'longitude': row.get('longitude', 0.0),
-            'date': row.get('timestamp', 'unknown')  # Using 'timestamp' as 'date'
-        } for row in sensor_data_list
-    ]
+            {
+                'serial_number': row[1],
+                'temperature': row[2],
+                'humidity': row[3],
+                'nitrogen': row[4],
+                'potassium': row[5],
+                'moisture': row[6],
+                'eclec': row[7],
+                'phosphorus': row[8],
+                'soilPH': row[9],
+                'latitude': row[10],
+                'longitude': row[11],
+                'date': row[12]
+            } for row in rows
+        ]
+
+    # # Fetch all sensor data for charts and maps from JSON file
+    # try:
+    #     with open("sensor_data.json", "r") as file:
+    #         data = json.load(file)  # Load data from JSON file
+    #     sensor_data_list = data.get("message", []) 
+    # except (FileNotFoundError, json.JSONDecodeError):
+    #     sensor_data_list = []  # If file not found or empty, return an empty list
+    
+    # # Reformat the data to match the expected structure
+    # sensor_data = [
+    #     {
+    #         'serial_number': row.get('serial_number', 'unknown'),
+    #         'temperature': row.get('temperature', 0.0),
+    #         'humidity': row.get('humidity', 0.0),
+    #         'nitrogen': row.get('nitrogen', 0.0),
+    #         'potassium': row.get('potassium', 0.0),
+    #         'moisture': row.get('moisture', 0.0),
+    #         'eclec': row.get('eclec', 0.0),
+    #         'phosphorus': row.get('phosphorus', 0.0),
+    #         'soilPH': row.get('soilPH', 0.0),
+    #         'latitude': row.get('latitude', 0.0),
+    #         'longitude': row.get('longitude', 0.0),
+    #         'date': row.get('timestamp', 'unknown')  # Using 'timestamp' as 'date'
+    #     } for row in sensor_data_list
+    # ]
     
     # Prepare chart data for temperature, humidity, etc.
     chart_data = {
