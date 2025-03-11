@@ -64,7 +64,7 @@ def store_data():
 
     try:
         if not data or not isinstance(data, dict):
-        return jsonify({"error": "Invalid JSON format or data"}), 400
+            return jsonify({"error": "Invalid JSON format or data"}), 400
         
         sensor_entry = {
             "serial_number": data.get('serial_number', 'unknown'),
