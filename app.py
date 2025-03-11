@@ -391,8 +391,9 @@ def index():
     try:
         with open("sensor_data.json", "r") as file:
             data = json.load(file)  # Load data from JSON file
+        sensor_data_list = data.get("message", []) 
     except (FileNotFoundError, json.JSONDecodeError):
-        data = []  # If file not found or empty, return an empty list
+        sensor_data_list = []  # If file not found or empty, return an empty list
     
     # Reformat the data to match the expected structure
     sensor_data = [
@@ -409,7 +410,7 @@ def index():
             'latitude': row.get('latitude', 0.0),
             'longitude': row.get('longitude', 0.0),
             'date': row.get('timestamp', 'unknown')  # Using 'timestamp' as 'date'
-        } for row in data
+        } for row in sensor_data_list
     ]
 
 
